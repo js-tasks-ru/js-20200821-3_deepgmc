@@ -5,8 +5,9 @@
  * @returns {object} - returns the new object
  */
 export const pick = (obj, ...fields) => {
-  return fields.reduce((ret, name) => {
-    if(obj.hasOwnProperty(name)) ret[name] = obj[name]
-    return ret
-  }, {})
+  const result = {};
+  for (const [key, val] of Object.entries(obj)) {
+    if (fields.includes(key)) result[key] = val;
+  }
+  return result;
 }
