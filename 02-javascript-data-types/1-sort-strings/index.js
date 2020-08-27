@@ -5,10 +5,6 @@
  * @returns {ObjectConstructor}
  */
 export function sortStrings(arr, param = 'asc') {
-  const collator = new Intl.Collator('ru', {
-    usage    : 'sort',
-    caseFirst: 'upper',
-  })
-  const ret = [...arr].sort(collator.compare)
+  const ret = [...arr].sort(new Intl.Collator('ru', {caseFirst: 'upper'}).compare)
   return param === 'desc' ? ret.reverse() : ret
 }
