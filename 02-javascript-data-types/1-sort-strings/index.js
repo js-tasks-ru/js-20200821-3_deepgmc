@@ -5,5 +5,10 @@
  * @returns {string[]}
  */
 export function sortStrings(arr, param = 'asc') {
-
+  return [...arr].sort((a, b) => {
+    return new Intl.Collator('ru', {caseFirst: 'upper'})
+      .compare(
+        ...(param === 'asc' ? [a, b] : [b, a])
+      );
+  });
 }
