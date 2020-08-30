@@ -8,21 +8,19 @@ export function trimSymbols(string, size) {
   let last_char = '',
       counter   = 1
   return [...string].filter((char) => {
-      let result
       if (
           last_char !== char && counter <= size) {
           counter = 1
           last_char = char
-          result = char
+        return char
       } else {
           if (counter >= size) {
-            result = false
+            return false
           } else {
               counter++
-              result = char
+            return char
           }
       }
-      return result
     })
     .join('')
 }
