@@ -5,7 +5,7 @@ export default class ColumnChart {
     graphHref = 'def'
     chartHeight = 50 // высота в пикселях из цсс
     
-    constructor({ data = [], label = '', href = '', value = null }) {
+    constructor({data = [], label = '', href = '', value = null} = {}) {
         this.data = data
         this.graphHref = href
         this.graphValue = value
@@ -36,7 +36,7 @@ export default class ColumnChart {
     }
     
     getTpl(){
-        return `<div class="column-chart">
+        return `<div class="${this.data.length > 0 ? 'column-chart' : 'column-chart_loading'}">
           <div class="column-chart__title">
             ${this.label}
             ${this.link}
