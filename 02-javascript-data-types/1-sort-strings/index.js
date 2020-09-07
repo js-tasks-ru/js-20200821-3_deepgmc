@@ -6,9 +6,13 @@
  */
 export function sortStrings(arr, param = 'asc') {
   return [...arr].sort((a, b) => {
+      return compareStrings(a, b, param)
+  })
+}
+
+export function compareStrings(a, b, order){
     return new Intl.Collator('ru', {caseFirst: 'upper'})
-      .compare(
-        ...(param === 'asc' ? [a, b] : [b, a])
-      );
-  });
+        .compare(
+            ...(order === 'asc' ? [a, b] : [b, a])
+        )
 }

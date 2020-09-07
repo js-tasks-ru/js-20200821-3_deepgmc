@@ -52,7 +52,7 @@ export default class NotificationMessage {
                     </div>
                 </div>
             </div>
-        `
+        `;
     }
 
     get seconds(){
