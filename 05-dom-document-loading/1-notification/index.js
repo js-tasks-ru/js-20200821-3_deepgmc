@@ -1,6 +1,6 @@
 export default class NotificationMessage {
 
-    static staticElement //сохраняем ссылку на созданный элемент
+    static staticElement //сохраняем ссылку на созданный объект
     
     timeoutId = null //свойство покажем явно, для наглядности
 
@@ -12,19 +12,19 @@ export default class NotificationMessage {
     }
     
     cleanStatic(){
-        if(NotificationMessage.staticElement) NotificationMessage.staticElement.remove()
+        if(NotificationMessage.staticElement) NotificationMessage.staticElement.destroy()
     }
 
     makeElement() {
-        //создаем элемент по шаблону и сохраняем ссылку на него в статике
+        //создаем элемент по шаблону и сохраняем ссылку на его объект в статике
         const wrapElement = document.createElement('div')
         wrapElement.innerHTML = this.template
         this.element = wrapElement.firstElementChild
     
-        //удаляем сохраненный в "прошлом" объекте элемент перед тем как рендерить текущий
+        //удаляем сохраненный в "прошлом" объект перед тем как рендерить текущий
         this.cleanStatic()
         //а затем снова занесём его в статику
-        NotificationMessage.staticElement = this.element
+        NotificationMessage.staticElement = this
     }
 
     show(renderToElem = document.body) {
