@@ -1,35 +1,40 @@
 export default class NotificationMessage {
 
-    static staticElement
+    static staticElement //сохраняем ссылку на созданный элемент
+    
+    timeoutId = null //свойство покажем явно, для наглядности
 
-    timeoutObj
-
-    constructor(message, {duration = 2000, type = 'success'}) {
+    constructor(message, {duration = 2000, type = 'success'} = {}) {
         this.message = message
         this.duration = duration
         this.type = type
         this.makeElement()
     }
+    
+    cleanStatic(){
+        if(NotificationMessage.staticElement) NotificationMessage.staticElement.remove()
+    }
 
     makeElement() {
+        //создаем элемент по шаблону и сохраняем ссылку на него в статике
         const wrapElement = document.createElement('div')
         wrapElement.innerHTML = this.template
         this.element = wrapElement.firstElementChild
-        if(NotificationMessage.staticElement)       NotificationMessage.staticElement.remove()
-        NotificationMessage.staticElement = wrapElement.firstElementChild
+    
+        //удаляем сохраненный в "прошлом" объекте элемент перед тем как рендерить текущий
+        this.cleanStatic()
+        //а затем снова занесём его в статику
+        NotificationMessage.staticElement = this.element
     }
 
     show(renderToElem = document.body) {
         renderToElem.append(this.element)
-        this.timeoutObj = setTimeout(this.destroy.bind(this), this.duration)
+        this.timeoutId = setTimeout(this.destroy.bind(this), this.duration)
     }
 
     destroy(){
-        console.log('destroy');
-        NotificationMessage.staticElement.remove()
-        NotificationMessage.staticElement = null
+        if(this.timeoutObj) clearTimeout(this.timeoutId);
         this.remove()
-        this.timeoutObj.clearInterval()
     }
 
     remove() {
@@ -41,10 +46,10 @@ export default class NotificationMessage {
             <div class="notification ${this.type}" style="--value:${this.seconds}s">
                 <div class="timer"></div>
                 <div class="inner-wrapper">
-                  <div class="notification-header">${this.type}</div>
-                  <div class="notification-body">
-                    ${this.message}
-                  </div>
+                    <div class="notification-header">${this.type}</div>
+                    <div class="notification-body">
+                        ${this.message}
+                    </div>
                 </div>
             </div>
         `
