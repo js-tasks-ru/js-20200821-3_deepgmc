@@ -63,7 +63,6 @@ export default class SortableTable {
             switch(headerItem.id){
                 case 'images':
                     return headerItem.template(rowData.images)
-                    break//этот брейк по идее не нужен после return, но я думаю для "строгости" кода нужно его оставить
                 default:
                     return this.getCellItem(rowData, headerItem.id)
             }
@@ -75,46 +74,25 @@ export default class SortableTable {
         return `<div class=sortable-table__cell>${rowItem[cellDataId]}</div>`
     }
     
-    
-    
     //SORTING and so on
     sort(fieldValue, orderText) {
-    
-        //сортировка нужна строковая или числовая? - берем из данных шапки таблицы, там есть параметр что это за сортировка
-        const isNumericSort = ((fieldValue) => {
-            for(const headerDataItem of this.headerData){
-                if(headerDataItem.id === fieldValue) {
-                    return headerDataItem.sortType === 'number'
-                }
-            }
-        })(fieldValue)
-        
+        const column = this.headerData.find(item => item.id === fieldValue)
+        const {sortType, customSorting} = column
+        const direction = orderText === 'asc' ? 1 : -1
+
         this.data.sort((a, b) => {
-            if(isNumericSort){
-                return getOrderByText(orderText) * getOrder(a, b, fieldValue)
-            } else {
-                
-                //не знаю, можно ли было, но я немного переделал экспорт из 02-sort-strings, вернул оттуда нужную функцию-сравниватель
-                //тесты проходят, наверное все ок
-                
-                return compareStrings(a[fieldValue], b[fieldValue], orderText)
+            switch (sortType) {
+                case 'number':
+                    return direction * (a[fieldValue] - b[fieldValue])
+                case 'string':
+                    return compareStrings(a[fieldValue], b[fieldValue], orderText)
+                case 'custom':
+                    //customSorting - это как я понял, на будущее сделано, ок
+                    return direction * customSorting(a, b)
+                default:
+                    return direction * (a[fieldValue] - b[fieldValue])
             }
         })
-        
-        function getOrder(a, b, fieldValue){
-            return a[fieldValue] > b[fieldValue] ? 1 : -1
-        }
-        
-        function getOrderByText(orderText){
-            switch(orderText){
-                case 'asc':
-                    return 1
-                case 'desc':
-                    return -1
-                default:
-                    return 1
-            }
-        }
     
         this.getBodyFromDataWrap()
     }
@@ -127,7 +105,6 @@ export default class SortableTable {
     }
     
     destroy() {
-        //event listeners remove also
         this.remove()
     }
     
