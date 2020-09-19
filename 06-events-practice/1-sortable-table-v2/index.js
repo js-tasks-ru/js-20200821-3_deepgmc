@@ -3,8 +3,6 @@ export default class SortableTable {
     element
     subElements = {}
     defaultSortOrder = 'asc'
-    
-    //сохраняем, т.к. эти данные нужны при рендере стрелки в первый раз
     defaultSorting
     
     constructor(header, {
