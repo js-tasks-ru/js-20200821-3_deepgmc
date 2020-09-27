@@ -1,10 +1,4 @@
 export default class RangePicker {
-    
-    //!!!!!!!!
-    // Можно не проверять - делал, смотря готовое решение в записи видео
-    // было полезно просто разобраться как этот компонент устроен
-    // своего добавил совсем немного
-    
     element = null
     subElements = {}
     selectingFrom = true//что начинаем выбирать
@@ -22,6 +16,12 @@ export default class RangePicker {
         this.selected = {from, to}
         this.startDateFrom = new Date(from)
         this.render()
+    
+        //events
+        const {input, selector} = this.subElements
+        document.addEventListener('click', this.onDocumentClick, true)
+        input.addEventListener('click', this.toggleSelector)
+        selector.addEventListener('click', this.onSelectorClick)
     }
     
     render(){
@@ -29,8 +29,6 @@ export default class RangePicker {
         wrapper.innerHTML = this.template
         this.element = wrapper.firstElementChild
         this.subElements = this.getSubElements(this.element)
-        
-        this.initEventListeners()
     }
     
     get template(){
@@ -44,13 +42,6 @@ export default class RangePicker {
             <div class="rangepicker__selector" data-element="selector"></div>
         </div>
         `;
-    }
-    
-    initEventListeners(){
-        const {input, selector} = this.subElements
-        document.addEventListener('click', this.onDocumentClick, true)
-        input.addEventListener('click', this.toggleSelector)
-        selector.addEventListener('click', this.onSelectorClick)
     }
     
     renderPicker(){
@@ -74,8 +65,10 @@ export default class RangePicker {
     }
     
     renderCalendar(showDate){
-        
+        //рендер одного календаря (из двух)
         const date = new Date(showDate)
+        
+        //логика вычисления смещения дней взята из готового решения
         const getIndex = (dayIndex) => {
             const index = dayIndex === 0 ? 6 : (dayIndex - 1)
             return index + 3
@@ -87,7 +80,7 @@ export default class RangePicker {
         
         const cells = []
         
-        let tpl =
+        let template =
             `
             <div class="rangepicker__calendar">
                 <div class="rangepicker__month-indicator">
@@ -101,14 +94,15 @@ export default class RangePicker {
         
         //добавляем ЦССом пробел дней НЕ в текущем месяце
         cells.push(
+                `
+                <button type="button" class="${this.cellClass}"
+                    data-value="${date.toISOString()}"
+                    style="--start-from: ${getIndex(date.getDay())}"
+                >
+                    ${date.getDate()}
+                </button>
             `
-            <button type="button" class="${this.cellClass}"
-                data-value="${date.toISOString()}"
-                style="--start-from: ${getIndex(date.getDay())}"
-            >
-                ${date.getDate()}
-            </button>
-        `);
+        );
         
         date.setDate(2)
         
@@ -123,9 +117,9 @@ export default class RangePicker {
             `);
             date.setDate(date.getDate() + 1)
         }
-        
-        tpl = tpl + cells.join('') + '</div></div>'
-        return tpl
+    
+        //всего 1 конкатенация строк, должно быть ок
+        return template + cells.join('') + '</div></div>'
     }
     
     onSelectorClick = (e) => {
@@ -201,6 +195,7 @@ export default class RangePicker {
     }
     
     dispatchChooseDate(){
+        //выкидываем событие, что дата сменилась, другие будут его хватать, брать из детэйла даты и перерендериваться
         this.element.dispatchEvent(new CustomEvent('date-select'), {
             bubbles: true,
             detail: this.selected
